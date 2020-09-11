@@ -1,12 +1,44 @@
-const http = require('http');
-const port = process.env.PORT || 3000
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/html');
-  res.end('<h1>Hello World</h1>');
+const port = process.env.PORT || 3000;
+const express = require("express");
+const cors = require("cors");
+const stripe = require("stripe")(
+  "sk_test_51HQ4qtHt0wcdFhOshSiHumZlOPea7uSYDiuJCMD7yniLdg6cEROOnymZvwEDPfvXW9rR6kDbgmuk9bStlnOIVexZ00T8MNtDOE"
+);
+
+
+// - App config
+const app = express();
+
+// - Middlewares
+app.use(cors({ origin: true }));
+app.use(express.json());
+
+// - API routes
+app.get("/", (request, response) => response.status(200).send("hello world"));
+
+app.post("/payments/create", async function (request, response, next) {
+  try {
+    const total = request.query.total;
+
+    console.log("Payment Request Recieved BOOM!!! for this amount >>> ", total);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total, // subunits of the currency
+      currency: "inr",
+    });
+
+    // OK - Created
+    response.status(201).send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (err) {
+    console.log(err);
+    response.status(500).send("error");
+  }
 });
 
-server.listen(port,() => {
-  console.log(`Server running at port `+port);
+// - Listen command
+app.listen(3000, () => {
+  console.log(`Server running at port ` + port);
 });

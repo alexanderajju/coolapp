@@ -4,7 +4,10 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.17.1"
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "stripe": "^8.95.0",
+    "stripes": "0.0.82"
   },
   "devDependencies": {},
   "scripts": {
